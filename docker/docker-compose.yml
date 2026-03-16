@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      ENV: dev
+      API_AUTH_TOKEN: dev-api-key
+      LOG_LEVEL: DEBUG
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../backend/src/data:/app/backend/src/data

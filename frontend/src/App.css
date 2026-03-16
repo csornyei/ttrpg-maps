@@ -1,0 +1,132 @@
+:root {
+  --color-bg: #1a1a2e;
+  --color-surface: #22223a;
+  --color-text: #e0e0e0;
+  --color-heading: #f5f5f5;
+  --drawer-height: 260px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.app__header {
+  padding: 12px 20px;
+  background: var(--color-surface);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app__header h1 {
+  font-size: 1.25rem;
+  color: var(--color-heading);
+}
+
+.app__main {
+  flex: 1;
+  overflow: auto;
+}
+
+/* ── Map ── */
+
+.map-container {
+  position: relative;
+  width: 100%;
+}
+
+.map-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.map-overlay g {
+  pointer-events: auto;
+}
+
+/* ── Drawer ── */
+
+.drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--drawer-height);
+  background: var(--color-surface);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  padding: 16px 20px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.drawer--open {
+  transform: translateY(0);
+}
+
+.drawer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.drawer__title {
+  font-size: 1.2rem;
+}
+
+.drawer__close {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.drawer__close:hover {
+  color: #fff;
+}
+
+.drawer__body {
+  line-height: 1.6;
+}
+
+.drawer__description {
+  margin-bottom: 12px;
+}
+
+.drawer__notes-heading {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  color: #aaa;
+}
+
+.drawer__notes {
+  font-style: italic;
+  color: #ccc;
+}

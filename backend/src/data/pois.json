@@ -1,0 +1,111 @@
+[
+  {
+    "id": "slatemark",
+    "name": "Slatemark",
+    "col": 8,
+    "row": 4,
+    "color": "#e74c3c",
+    "description": "A fortified mining settlement built into dark slate cliffs. Known for its resilient people and the deep veins of ore beneath.",
+    "notes": "Major trade hub. Controlled by the Slate Guild."
+  },
+  {
+    "id": "garden-of-the-ancients",
+    "name": "Garden of the Ancients",
+    "col": 23,
+    "row": 13,
+    "color": "#27ae60",
+    "description": "An overgrown ruin filled with colossal stone statues and strange, luminescent flora. The air hums with residual magic.",
+    "notes": "Ancient druidic site. Possible dungeon entrance in the northern grove."
+  },
+  {
+    "id": "pewter-5",
+    "name": "Pewter-5",
+    "col": 26,
+    "row": 19,
+    "color": "#8e44ad",
+    "description": "The fifth outpost in the Pewter line — a watchtower network spanning the southern ridge. Partially collapsed but still manned.",
+    "notes": "Garrison of 12 soldiers. Signal fire system still operational."
+  },
+  {
+    "id": "iron-4",
+    "name": "Iron-4",
+    "col": 23,
+    "row": 22,
+    "color": "#f39c12",
+    "description": "A fortified checkpoint along the Iron Road. Heavily armored gates control passage through the narrow canyon.",
+    "notes": "Toll station. 5gp per wagon, 1gp per traveler."
+  },
+  {
+    "id": "argent",
+    "name": "Argent",
+    "col": 26,
+    "row": 22,
+    "color": "#2980b9",
+    "description": "A shimmering lakeside town known for its silver-working artisans and the great library that overlooks the water.",
+    "notes": "Library contains maps of the old kingdom. Sage NPC: Thelandra."
+  },
+  {
+    "id": "silicon-3",
+    "name": "Silicon-3",
+    "col": 25,
+    "row": 24,
+    "color": "#1abc9c",
+    "description": "A crystal-encrusted cavern complex used as a research station. Strange echoes and refracted light fill every chamber.",
+    "notes": "Crystals can be harvested (Arcana DC 15). Worth 50gp each."
+  },
+  {
+    "id": "gold-1",
+    "name": "Gold-1",
+    "col": 29,
+    "row": 24,
+    "color": "#f1c40f",
+    "description": "The primary gold mine of Echo Valley. Wealthy and well-guarded, it draws prospectors and trouble in equal measure.",
+    "notes": "Mine boss: Durgan Ironfist. Rumor of a collapsed lower level."
+  },
+  {
+    "id": "saltcroft",
+    "name": "Saltcroft",
+    "col": 7,
+    "row": 30,
+    "color": "#e67e22",
+    "description": "A coastal settlement where salt is harvested from vast tidal flats. The briny wind carries far across the valley.",
+    "notes": "Salt trade route connects to Slatemark. Festival of Tides in autumn."
+  },
+  {
+    "id": "library",
+    "name": "Technomancer's Library",
+    "color": "#3498db",
+    "description": "A vast repository of magical and technological knowledge, where ancient tomes and modern inventions coexist.",
+    "notes": "Home to the Archmage of Technology. Rare scrolls and artifacts available for study.",
+    "path": [
+      { "col": 10, "row": 28 },
+      { "col": 10, "row": 29 },
+      { "col": 11, "row": 29 },
+      { "col": 13, "row": 28 },
+      { "col": 14, "row": 28 },
+      { "col": 15, "row": 28 },
+      { "col": 16, "row": 28 },
+      { "col": 17, "row": 28 },
+      { "col": 18, "row": 28 },
+      { "col": 19, "row": 28 },
+      { "col": 20, "row": 28 }
+    ]
+  },
+  {
+    "id": "colossus",
+    "name": "Colossus",
+    "color": "#7f8c8d",
+    "description": "A massive stone statue of a forgotten hero, standing sentinel over the valley. Its eyes seem to follow travelers.",
+    "notes": "Ancient guardian. Possible hidden chamber at its base.",
+    "path": [
+      { "col": 14, "row": 14 },
+      { "col": 14, "row": 15 },
+      { "col": 15, "row": 15 },
+      { "col": 16, "row": 15 },
+      { "col": 17, "row": 15 },
+      { "col": 18, "row": 15 },
+      { "col": 19, "row": 15 },
+      { "col": 20, "row": 15 }
+    ]
+  }
+]
