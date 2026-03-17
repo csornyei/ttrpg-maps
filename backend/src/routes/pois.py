@@ -10,7 +10,7 @@ from fastapi import (
     status,
 )
 
-from backend.src.config import Settings, get_settings
+from src.config import Settings, get_settings
 from src.models import PoiCreate, PoiDetail, PoiSummary, PoiUpdate
 from src.observability import (
     websocket_connected,
