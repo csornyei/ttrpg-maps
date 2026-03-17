@@ -22,6 +22,7 @@ Set these environment variables before starting the backend:
 - `API_AUTH_TOKEN` - shared secret for write endpoints (required)
 - `FRONTEND_ORIGIN` - required when `ENV=prod`, for example `https://map.example.com`
 - `LOG_LEVEL` - logging verbosity (default: `INFO`)
+- `UPDATE_INTERVAL_SECONDS` - how often the websocket should publish location updates
 
 ### CORS behavior
 

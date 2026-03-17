@@ -10,6 +10,7 @@ from fastapi import (
     status,
 )
 
+from backend.src.config import Settings, get_settings
 from src.models import PoiCreate, PoiDetail, PoiSummary, PoiUpdate
 from src.observability import (
     websocket_connected,
@@ -21,8 +22,6 @@ from src.security import require_write_auth
 
 api_router = APIRouter(prefix="/api/pois", tags=["pois"])
 ws_router = APIRouter(tags=["pois-ws"])
-
-UPDATE_INTERVAL_SECONDS = 1
 
 
 @api_router.get("")
@@ -73,7 +72,9 @@ async def delete_poi(
 
 
 @ws_router.websocket("/ws/pois")
-async def pois_ws(websocket: WebSocket) -> None:
+async def pois_ws(
+    websocket: WebSocket, settings: Settings = Depends(get_settings)
+) -> None:
     await websocket.accept()
     websocket_connected()
     try:
@@ -81,7 +82,7 @@ async def pois_ws(websocket: WebSocket) -> None:
             summaries = poi_store.get_all_summaries()
             await websocket.send_json([summary.model_dump() for summary in summaries])
             websocket_message_sent()
-            await asyncio.sleep(UPDATE_INTERVAL_SECONDS)
+            await asyncio.sleep(settings.update_interval_seconds)
             poi_store.advance_moving_pois()
     except WebSocketDisconnect:
         pass

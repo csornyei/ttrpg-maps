@@ -1,5 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
-const WS_BASE = import.meta.env.VITE_WS_BASE ?? "ws://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE ?? "";
+const WS_BASE =
+  import.meta.env.VITE_WS_BASE ??
+  `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}`;
 
 export const API_URL = `${API_BASE}/api`;
 export const WS_URL = `${WS_BASE}/ws`;

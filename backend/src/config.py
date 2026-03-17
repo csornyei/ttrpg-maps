@@ -9,6 +9,7 @@ class Settings(BaseModel):
     frontend_origin: str | None = None
     api_auth_token: str
     log_level: str = "INFO"
+    update_interval_seconds: int = 30
 
     @field_validator("env")
     @classmethod
@@ -32,6 +33,7 @@ def get_settings() -> Settings:
             frontend_origin=os.getenv("FRONTEND_ORIGIN"),
             api_auth_token=os.getenv("API_AUTH_TOKEN", ""),
             log_level=os.getenv("LOG_LEVEL", "INFO"),
+            update_interval_seconds=int(os.getenv("UPDATE_INTERVAL_SECONDS", "30")),
         )
     except ValidationError as error:
         raise ValueError(f"Invalid configuration: {error}") from error
