@@ -43,14 +43,10 @@ describe('DetailDrawer when isOpen=true', () => {
     expect(screen.getByText('A tall ancient tower.')).toBeInTheDocument()
   })
 
-  it('notes heading says GM Notes', () => {
+  it('notes are not shown', () => {
     render(<DetailDrawer detail={detail} isOpen={true} onClose={vi.fn()} />)
-    expect(screen.getByText('GM Notes')).toBeInTheDocument()
-  })
-
-  it('notes paragraph is present', () => {
-    render(<DetailDrawer detail={detail} isOpen={true} onClose={vi.fn()} />)
-    expect(screen.getByText('The mage lives here.')).toBeInTheDocument()
+    expect(screen.queryByText('GM Notes')).not.toBeInTheDocument()
+    expect(screen.queryByText('The mage lives here.')).not.toBeInTheDocument()
   })
 
   it('close button is present', () => {
