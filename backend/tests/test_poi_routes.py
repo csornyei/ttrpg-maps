@@ -65,6 +65,23 @@ class TestListPois:
         resp = client.get("/api/pois")
         assert resp.status_code == 200
 
+    def test_list_pois_excludes_hidden(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        client.post(
+            "/api/pois",
+            json={**STATIC_PAYLOAD, "id": "p2", "name": "Hidden", "visible": False},
+            headers=AUTH_HEADER,
+        )
+        data = client.get("/api/pois").json()
+        ids = {item["id"] for item in data}
+        assert "p1" in ids
+        assert "p2" not in ids
+
+    def test_list_pois_patch_hidden_removes_from_list(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        client.patch("/api/pois/p1", json={"visible": False}, headers=AUTH_HEADER)
+        assert client.get("/api/pois").json() == []
+
 
 # ---------------------------------------------------------------------------
 # GET /api/pois/{poi_id}
@@ -83,6 +100,21 @@ class TestGetPoiDetail:
     def test_get_detail_not_found(self, client: TestClient) -> None:
         resp = client.get("/api/pois/nonexistent")
         assert resp.status_code == 404
+
+    def test_path_omitted_by_default(self, client: TestClient) -> None:
+        client.post("/api/pois", json=MOVING_PAYLOAD, headers=AUTH_HEADER)
+        data = client.get("/api/pois/m1").json()
+        assert data["path"] is None
+
+    def test_path_returned_for_moving_poi(self, client: TestClient) -> None:
+        client.post("/api/pois", json=MOVING_PAYLOAD, headers=AUTH_HEADER)
+        data = client.get("/api/pois/m1?path=true").json()
+        assert data["path"] == MOVING_PAYLOAD["path"]
+
+    def test_path_null_for_static_poi_even_with_param(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        data = client.get("/api/pois/p1?path=true").json()
+        assert data["path"] is None
 
 
 # ---------------------------------------------------------------------------
@@ -275,3 +307,30 @@ class TestDeletePoi:
         client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
         resp = client.delete("/api/pois/p1")
         assert resp.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# WebSocket /ws/pois
+# ---------------------------------------------------------------------------
+
+
+class TestPoisWebSocket:
+    def test_ws_returns_only_visible_pois(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        client.post(
+            "/api/pois",
+            json={**STATIC_PAYLOAD, "id": "p2", "name": "Hidden", "visible": False},
+            headers=AUTH_HEADER,
+        )
+        with client.websocket_connect("/ws/pois") as ws:
+            data = ws.receive_json()
+        ids = {item["id"] for item in data}
+        assert "p1" in ids
+        assert "p2" not in ids
+
+    def test_ws_excludes_poi_after_patch_hidden(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        client.patch("/api/pois/p1", json={"visible": False}, headers=AUTH_HEADER)
+        with client.websocket_connect("/ws/pois") as ws:
+            data = ws.receive_json()
+        assert data == []

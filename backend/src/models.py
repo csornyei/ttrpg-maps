@@ -18,6 +18,7 @@ class PoiSummary(BaseModel):
 class PoiDetail(PoiSummary):
     description: str
     notes: str
+    path: list[HexCoord] | None = None
 
 
 class PoiWrite(BaseModel):

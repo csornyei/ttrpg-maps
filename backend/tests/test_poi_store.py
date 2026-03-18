@@ -1,6 +1,6 @@
 import pytest
 
-from src.models import HexCoord, PoiCreate, PoiUpdate
+from src.models import HexCoord, PoiCreate, PoiPatch, PoiUpdate
 from src.poi_store import PoiStore
 
 
@@ -191,6 +191,44 @@ class TestMovingPoiCrud:
         ).fetchone()
         assert points["c"] == 0
         assert index["c"] == 0
+
+
+# ---------------------------------------------------------------------------
+# Visibility filtering
+# ---------------------------------------------------------------------------
+
+
+class TestVisibilityFiltering:
+    def test_hidden_poi_excluded_from_summaries(self, store: PoiStore) -> None:
+        store.create_poi(make_static("p1", name="Visible"))
+        store.create_poi(
+            PoiCreate(
+                id="p2", name="Hidden", color="#000", description="", notes="",
+                col=1, row=1, visible=False,
+            )
+        )
+        ids = {s.id for s in store.get_all_summaries()}
+        assert "p1" in ids
+        assert "p2" not in ids
+
+    def test_visible_true_included_in_summaries(self, store: PoiStore) -> None:
+        store.create_poi(make_static("p1"))
+        assert len(store.get_all_summaries()) == 1
+
+    def test_patch_to_hidden_removes_from_summaries(self, store: PoiStore) -> None:
+        store.create_poi(make_static("p1"))
+        store.patch_poi("p1", PoiPatch(visible=False))
+        assert store.get_all_summaries() == []
+
+    def test_patch_back_to_visible_restores_in_summaries(self, store: PoiStore) -> None:
+        store.create_poi(
+            PoiCreate(
+                id="p1", name="Hidden", color="#000", description="", notes="",
+                col=1, row=1, visible=False,
+            )
+        )
+        store.patch_poi("p1", PoiPatch(visible=True))
+        assert len(store.get_all_summaries()) == 1
 
 
 # ---------------------------------------------------------------------------

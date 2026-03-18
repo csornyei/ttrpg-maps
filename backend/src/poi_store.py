@@ -165,6 +165,7 @@ class PoiStore:
                 """
                 SELECT id, name, color, visible, col, row
                 FROM pois
+                WHERE visible = 1
                 ORDER BY name COLLATE NOCASE
                 """
             ).fetchall()
@@ -184,13 +185,18 @@ class PoiStore:
                 )
             return summaries
 
-    def get_detail_by_id(self, poi_id: str) -> PoiDetail | None:
+    def get_detail_by_id(self, poi_id: str, include_path: bool = False) -> PoiDetail | None:
         with self._db.lock:
             row = self._get_poi_row_locked(poi_id)
             if row is None:
                 return None
 
             position = self._resolve_position_locked(row)
+            path = (
+                self._get_path_locked(poi_id)
+                if include_path and row["col"] is None
+                else None
+            )
             return PoiDetail(
                 id=row["id"],
                 name=row["name"],
@@ -200,6 +206,7 @@ class PoiStore:
                 visible=bool(row["visible"]),
                 description=row["description"],
                 notes=row["notes"],
+                path=path,
             )
 
     def create_poi(self, poi: PoiCreate) -> PoiDetail:

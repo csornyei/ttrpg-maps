@@ -30,8 +30,8 @@ async def list_pois() -> list[PoiSummary]:
 
 
 @api_router.get("/{poi_id}")
-async def get_poi(poi_id: str) -> PoiDetail:
-    detail = poi_store.get_detail_by_id(poi_id)
+async def get_poi(poi_id: str, path: bool = False) -> PoiDetail:
+    detail = poi_store.get_detail_by_id(poi_id, include_path=path)
     if detail is None:
         raise HTTPException(status_code=404, detail="PoI not found")
     return detail
