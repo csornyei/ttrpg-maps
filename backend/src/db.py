@@ -25,6 +25,11 @@ class Database:
         self._connection.commit()
 
     def _run_migrations(self, migrations_dir: Path) -> None:
+        if not migrations_dir.is_dir():
+            raise RuntimeError(
+                f"Migrations directory not found: {migrations_dir}. "
+                "Ensure the 'migrations' directory is present alongside 'src'."
+            )
         logger.info("Running database migrations from directory: %s", migrations_dir)
         self._connection.execute(
             """

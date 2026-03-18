@@ -28,6 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-install-project
 
 COPY backend/src ./src
+COPY backend/migrations ./migrations
 COPY --from=frontend-builder /app/frontend/dist ./src/static
 
 RUN mkdir -p /app/backend/src/data
