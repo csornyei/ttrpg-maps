@@ -3,6 +3,7 @@ from pathlib import Path
 
 from src.db import Database
 from src.models import HexCoord, PoiCreate, PoiDetail, PoiPatch, PoiSummary, PoiUpdate
+from src.observability import logger
 
 DATA_DIR = Path(__file__).parent / "data"
 DB_PATH = DATA_DIR / "pois.db"
@@ -19,6 +20,7 @@ class PoiStore:
             resolved_db_path = db_path
             self._should_seed = False
         self._db = Database(resolved_db_path, MIGRATIONS_DIR)
+        logger.info("Initialized PoiStore with database at '%s'", resolved_db_path)
 
     def _get_path_locked(self, poi_id: str) -> list[HexCoord]:
         rows = self._db.execute(
@@ -185,7 +187,9 @@ class PoiStore:
                 )
             return summaries
 
-    def get_detail_by_id(self, poi_id: str, include_path: bool = False) -> PoiDetail | None:
+    def get_detail_by_id(
+        self, poi_id: str, include_path: bool = False
+    ) -> PoiDetail | None:
         with self._db.lock:
             row = self._get_poi_row_locked(poi_id)
             if row is None:
@@ -310,9 +314,13 @@ class PoiStore:
                 (
                     patch.name if patch.name is not None else row["name"],
                     patch.color if patch.color is not None else row["color"],
-                    patch.description if patch.description is not None else row["description"],
+                    patch.description
+                    if patch.description is not None
+                    else row["description"],
                     patch.notes if patch.notes is not None else row["notes"],
-                    patch.visible if patch.visible is not None else bool(row["visible"]),
+                    patch.visible
+                    if patch.visible is not None
+                    else bool(row["visible"]),
                     new_col,
                     new_row,
                     poi_id,

@@ -3,9 +3,12 @@ import sqlite3
 from pathlib import Path
 from threading import RLock
 
+from src.observability import logger
+
 
 class Database:
     def __init__(self, db_path: str, migrations_dir: Path) -> None:
+        logger.info("Initializing database with path: %s", db_path)
         self.lock = RLock()
         self._connection = sqlite3.connect(db_path, check_same_thread=False)
         self._connection.row_factory = sqlite3.Row
@@ -22,6 +25,7 @@ class Database:
         self._connection.commit()
 
     def _run_migrations(self, migrations_dir: Path) -> None:
+        logger.info("Running database migrations from directory: %s", migrations_dir)
         self._connection.execute(
             """
             CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -47,6 +51,7 @@ class Database:
                 "INSERT INTO schema_migrations (name) VALUES (?)", (path.name,)
             )
             self._connection.commit()
+            logger.info("Applied migration: %s", path.name)
 
     def _apply_migration(self, path: Path) -> None:
         spec = importlib.util.spec_from_file_location(path.stem, path)

@@ -68,3 +68,6 @@ def websocket_message_sent() -> None:
 @metrics_router.get("/metrics")
 async def metrics() -> Response:
     return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+logger = logging.getLogger("daggerheart.api")
