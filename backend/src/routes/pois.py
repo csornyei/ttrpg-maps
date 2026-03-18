@@ -11,7 +11,7 @@ from fastapi import (
 )
 
 from src.config import Settings, get_settings
-from src.models import PoiCreate, PoiDetail, PoiSummary, PoiUpdate
+from src.models import PoiCreate, PoiDetail, PoiPatch, PoiSummary, PoiUpdate
 from src.observability import (
     websocket_connected,
     websocket_disconnected,
@@ -55,6 +55,18 @@ async def update_poi(
     _: None = Depends(require_write_auth),
 ) -> PoiDetail:
     detail = poi_store.update_poi(poi_id, poi)
+    if detail is None:
+        raise HTTPException(status_code=404, detail="PoI not found")
+    return detail
+
+
+@api_router.patch("/{poi_id}")
+async def patch_poi(
+    poi_id: str,
+    patch: PoiPatch,
+    _: None = Depends(require_write_auth),
+) -> PoiDetail:
+    detail = poi_store.patch_poi(poi_id, patch)
     if detail is None:
         raise HTTPException(status_code=404, detail="PoI not found")
     return detail

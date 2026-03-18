@@ -174,6 +174,89 @@ class TestUpdatePoi:
 
 
 # ---------------------------------------------------------------------------
+# PATCH /api/pois/{poi_id}
+# ---------------------------------------------------------------------------
+
+
+class TestPatchPoi:
+    def test_patch_name_only(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch("/api/pois/p1", json={"name": "Renamed"}, headers=AUTH_HEADER)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["name"] == "Renamed"
+        assert data["color"] == STATIC_PAYLOAD["color"]
+        assert data["col"] == STATIC_PAYLOAD["col"]
+        assert data["row"] == STATIC_PAYLOAD["row"]
+
+    def test_patch_visible(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch("/api/pois/p1", json={"visible": False}, headers=AUTH_HEADER)
+        assert resp.status_code == 200
+        assert resp.json()["visible"] is False
+
+    def test_patch_static_position(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch("/api/pois/p1", json={"col": 99, "row": 88}, headers=AUTH_HEADER)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["col"] == 99
+        assert data["row"] == 88
+
+    def test_patch_static_to_moving(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch(
+            "/api/pois/p1",
+            json={"path": [{"col": 1, "row": 2}, {"col": 3, "row": 4}]},
+            headers=AUTH_HEADER,
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["col"] == 1
+        assert data["row"] == 2
+
+    def test_patch_moving_to_static(self, client: TestClient) -> None:
+        client.post("/api/pois", json=MOVING_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch("/api/pois/m1", json={"col": 5, "row": 6}, headers=AUTH_HEADER)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["col"] == 5
+        assert data["row"] == 6
+
+    def test_patch_moving_poi_keeps_path(self, client: TestClient) -> None:
+        client.post("/api/pois", json=MOVING_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch("/api/pois/m1", json={"name": "Renamed"}, headers=AUTH_HEADER)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["name"] == "Renamed"
+        assert data["col"] == MOVING_PAYLOAD["path"][0]["col"]
+        assert data["row"] == MOVING_PAYLOAD["path"][0]["row"]
+
+    def test_patch_not_found(self, client: TestClient) -> None:
+        resp = client.patch("/api/pois/ghost", json={"name": "X"}, headers=AUTH_HEADER)
+        assert resp.status_code == 404
+
+    def test_patch_no_auth(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch("/api/pois/p1", json={"name": "X"})
+        assert resp.status_code == 401
+
+    def test_patch_col_without_row_invalid(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch("/api/pois/p1", json={"col": 5}, headers=AUTH_HEADER)
+        assert resp.status_code == 422
+
+    def test_patch_col_and_path_invalid(self, client: TestClient) -> None:
+        client.post("/api/pois", json=STATIC_PAYLOAD, headers=AUTH_HEADER)
+        resp = client.patch(
+            "/api/pois/p1",
+            json={"col": 1, "row": 2, "path": [{"col": 1, "row": 2}]},
+            headers=AUTH_HEADER,
+        )
+        assert resp.status_code == 422
+
+
+# ---------------------------------------------------------------------------
 # DELETE /api/pois/{poi_id}
 # ---------------------------------------------------------------------------
 

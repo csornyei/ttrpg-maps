@@ -41,7 +41,7 @@ def make_moving(poi_id: str, name: str = "Moving POI") -> PoiCreate:
 
 class TestSchemaAndSeeding:
     def test_schema_creates_tables(self, store: PoiStore) -> None:
-        conn = store._connection
+        conn = store._db._connection
         tables = {
             row[0]
             for row in conn.execute(
@@ -182,7 +182,7 @@ class TestMovingPoiCrud:
     def test_delete_moving_poi_cascades_path(self, store: PoiStore) -> None:
         store.create_poi(make_moving("m1"))
         store.delete_poi("m1")
-        conn = store._connection
+        conn = store._db._connection
         points = conn.execute(
             "SELECT COUNT(*) AS c FROM poi_path_points WHERE poi_id = 'm1'"
         ).fetchone()
@@ -200,5 +200,5 @@ class TestMovingPoiCrud:
 
 class TestHealthCheck:
     def test_is_healthy_with_broken_db(self, store: PoiStore) -> None:
-        store._connection.close()
+        store._db._connection.close()
         assert store.is_healthy() is False

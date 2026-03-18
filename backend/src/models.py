@@ -12,6 +12,7 @@ class PoiSummary(BaseModel):
     col: int
     row: int
     color: str
+    visible: bool = True
 
 
 class PoiDetail(PoiSummary):
@@ -24,6 +25,7 @@ class PoiWrite(BaseModel):
     color: str
     description: str
     notes: str
+    visible: bool = True
     col: int | None = None
     row: int | None = None
     path: list[HexCoord] | None = None
@@ -51,3 +53,30 @@ class PoiCreate(PoiWrite):
 
 class PoiUpdate(PoiWrite):
     pass
+
+
+class PoiPatch(BaseModel):
+    name: str | None = None
+    color: str | None = None
+    description: str | None = None
+    notes: str | None = None
+    visible: bool | None = None
+    col: int | None = None
+    row: int | None = None
+    path: list[HexCoord] | None = None
+
+    @model_validator(mode="after")
+    def validate_position(self) -> "PoiPatch":
+        has_static = self.col is not None or self.row is not None
+        has_path = self.path is not None
+
+        if has_static and has_path:
+            raise ValueError("provide either col/row or path, not both")
+
+        if (self.col is None) != (self.row is None):
+            raise ValueError("col and row must be provided together")
+
+        if has_path and len(self.path) == 0:
+            raise ValueError("path must contain at least one coordinate")
+
+        return self
