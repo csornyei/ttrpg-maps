@@ -6,17 +6,6 @@ class HexCoord(BaseModel):
     row: int
 
 
-class RawPoi(BaseModel):
-    id: str
-    name: str
-    color: str
-    description: str
-    notes: str
-    col: int | None = None
-    row: int | None = None
-    path: list[HexCoord] | None = None
-
-
 class PoiSummary(BaseModel):
     id: str
     name: str

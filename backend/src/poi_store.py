@@ -1,29 +1,26 @@
-import json
 import sqlite3
 from pathlib import Path
 from threading import RLock
 
-from src.models import HexCoord, PoiCreate, PoiDetail, PoiSummary, PoiUpdate, RawPoi
+from src.models import HexCoord, PoiCreate, PoiDetail, PoiSummary, PoiUpdate
 
 DATA_DIR = Path(__file__).parent / "data"
 DB_PATH = DATA_DIR / "pois.db"
-SEED_DATA_PATH = DATA_DIR / "pois.json"
-
-
-def _load_seed_pois() -> list[RawPoi]:
-    with open(SEED_DATA_PATH, "r", encoding="utf-8") as file:
-        raw: list[dict[str, object]] = json.load(file)
-    return [RawPoi.model_validate(item) for item in raw]
 
 
 class PoiStore:
-    def __init__(self) -> None:
-        DATA_DIR.mkdir(parents=True, exist_ok=True)
+    def __init__(self, db_path: str | None = None) -> None:
+        if db_path is None:
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
+            resolved_db_path = str(DB_PATH)
+            self._should_seed = True
+        else:
+            resolved_db_path = db_path
+            self._should_seed = False
         self._lock = RLock()
-        self._connection = sqlite3.connect(DB_PATH, check_same_thread=False)
+        self._connection = sqlite3.connect(resolved_db_path, check_same_thread=False)
         self._connection.row_factory = sqlite3.Row
         self._initialize_schema()
-        self._seed_if_empty()
 
     def _initialize_schema(self) -> None:
         with self._lock:
@@ -94,7 +91,9 @@ class PoiStore:
                     """
                 )
 
-            pois_columns = self._connection.execute("PRAGMA table_info(pois)").fetchall()
+            pois_columns = self._connection.execute(
+                "PRAGMA table_info(pois)"
+            ).fetchall()
             has_poi_path_index_column = any(
                 column[1] == "path_index" for column in pois_columns
             )
@@ -118,27 +117,6 @@ class PoiStore:
                     """
                 )
 
-            self._connection.commit()
-
-    def _seed_if_empty(self) -> None:
-        with self._lock:
-            count_row = self._connection.execute(
-                "SELECT COUNT(*) AS count FROM pois"
-            ).fetchone()
-            if count_row and count_row["count"] > 0:
-                return
-
-            for poi in _load_seed_pois():
-                self._insert_poi_locked(
-                    poi_id=poi.id,
-                    name=poi.name,
-                    color=poi.color,
-                    description=poi.description,
-                    notes=poi.notes,
-                    col=poi.col,
-                    row=poi.row,
-                    path=poi.path,
-                )
             self._connection.commit()
 
     def _get_path_locked(self, poi_id: str) -> list[HexCoord]:
