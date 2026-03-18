@@ -41,6 +41,10 @@ body {
   overflow: auto;
 }
 
+.app__main--drawer-open {
+  padding-bottom: var(--drawer-height);
+}
+
 /* ── Map ── */
 
 .map-container {

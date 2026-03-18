@@ -88,6 +88,26 @@ describe('App drawer close', () => {
   })
 })
 
+describe('App main scroll padding', () => {
+  it('adds app__main--drawer-open class to main when drawer opens', async () => {
+    const { container } = render(<App />)
+    await waitFor(() => expect(container.querySelectorAll('svg g')).toHaveLength(1))
+    await userEvent.click(container.querySelector('svg g')!)
+    await waitFor(() => {
+      expect(container.querySelector('main')).toHaveClass('app__main--drawer-open')
+    })
+  })
+
+  it('removes app__main--drawer-open class when drawer closes', async () => {
+    const { container } = render(<App />)
+    await waitFor(() => expect(container.querySelectorAll('svg g')).toHaveLength(1))
+    await userEvent.click(container.querySelector('svg g')!)
+    await waitFor(() => expect(container.querySelector('.drawer--open')).toBeInTheDocument())
+    await userEvent.click(screen.getByRole('button'))
+    expect(container.querySelector('main')).not.toHaveClass('app__main--drawer-open')
+  })
+})
+
 describe('App WebSocket updates', () => {
   it('updates markers when WebSocket sends a new poi list', async () => {
     const newPoi: PoiSummary = { id: 'p2', name: 'New Place', col: 5, row: 5, color: '#00ff00' }

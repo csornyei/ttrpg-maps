@@ -37,7 +37,7 @@ function App() {
       <header className="app__header">
         <h1>Daggerheart Map</h1>
       </header>
-      <main className="app__main">
+      <main className={`app__main${drawerOpen ? " app__main--drawer-open" : ""}`}>
         <MapView pois={pois} onPoiClick={handlePoiClick} />
       </main>
       <DetailDrawer

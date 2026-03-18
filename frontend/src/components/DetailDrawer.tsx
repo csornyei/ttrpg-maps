@@ -12,10 +12,7 @@ export function DetailDrawer({ detail, isOpen, onClose }: DetailDrawerProps) {
   return (
     <div className={`drawer ${isOpen ? "drawer--open" : ""}`}>
       <div className="drawer__header">
-        <h2
-          className="drawer__title"
-          style={{ color: detail.color }}
-        >
+        <h2 className="drawer__title" style={{ color: detail.color }}>
           {detail.name}
         </h2>
         <button className="drawer__close" onClick={onClose}>
@@ -24,8 +21,6 @@ export function DetailDrawer({ detail, isOpen, onClose }: DetailDrawerProps) {
       </div>
       <div className="drawer__body">
         <p className="drawer__description">{detail.description}</p>
-        <h3 className="drawer__notes-heading">GM Notes</h3>
-        <p className="drawer__notes">{detail.notes}</p>
       </div>
     </div>
   );
